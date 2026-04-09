@@ -15,3 +15,10 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JSON_SORT_KEYS = False
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
+    CAMERA_INDEX = int(os.getenv("CAMERA_INDEX", "0"))
+    CAMERA_WIDTH = int(os.getenv("CAMERA_WIDTH", "640"))
+    CAMERA_HEIGHT = int(os.getenv("CAMERA_HEIGHT", "360"))
+    FACE_MATCH_THRESHOLD = float(os.getenv("FACE_MATCH_THRESHOLD", "0.45"))
+    FACE_PROCESS_EVERY_N_FRAMES = int(os.getenv("FACE_PROCESS_EVERY_N_FRAMES", "3"))
+    FACE_DETECTION_SCALE = float(os.getenv("FACE_DETECTION_SCALE", "0.5"))
+    STREAM_JPEG_QUALITY = int(os.getenv("STREAM_JPEG_QUALITY", "70"))

@@ -31,4 +31,5 @@ export const api = {
             method: "POST",
             body: JSON.stringify(payload),
         }),
+    getWebcamStreamUrl: () => `${API_BASE_URL}/stream/webcam`,
 };

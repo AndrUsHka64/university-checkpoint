@@ -2,8 +2,10 @@ import { NavLink } from "react-router-dom";
 
 const links = [
     { to: "/", label: "Home", end: true },
+    { to: "/start", label: "Monitor" },
     { to: "/admin", label: "Admin" },
     { to: "/admin/institutes", label: "Structure" },
+    { to: "/admin/notifications", label: "Notifications" },
 ];
 
 function Header() {
