@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 const initialForm = {
@@ -77,9 +77,62 @@ function AddStudent() {
                         onChange={handleChange}
                     />
                 </div>
+
+                <div className="camera-block">
+                    <video ref={videoRef} autoPlay muted playsInline />
+                </div>
+
+                <div className="toolbar">
+                    {!isCameraActive ? (
+                        <button type="button" className="button ghost" onClick={startCamera}>
+                            Start camera
+                        </button>
+                    ) : (
+                        <button type="button" className="button ghost" onClick={stopCamera}>
+                            Stop camera
+                        </button>
+                    )}
+                </div>
+
+                {error ? <p className="error-text">{error}</p> : null}
             </form>
         </section>
     );
 }
 
 export default AddStudent;
+    const [isCameraActive, setIsCameraActive] = useState(false);
+    const [error, setError] = useState("");
+
+    const videoRef = useRef(null);
+    const streamRef = useRef(null);
+
+    useEffect(() => {
+        return () => {
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach((track) => track.stop());
+            }
+        };
+    }, []);
+
+    const startCamera = async () => {
+        setError("");
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            streamRef.current = stream;
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+            }
+            setIsCameraActive(true);
+        } catch (_error) {
+            setError("Could not open webcam.");
+        }
+    };
+
+    const stopCamera = () => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach((track) => track.stop());
+            streamRef.current = null;
+        }
+        setIsCameraActive(false);
+    };
