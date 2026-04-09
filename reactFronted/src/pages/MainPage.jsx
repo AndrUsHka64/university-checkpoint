@@ -5,6 +5,8 @@ import { api } from "../api/client";
 function MainPage() {
     const [frame, setFrame] = useState("");
     const [streamError, setStreamError] = useState("");
+    const [accessState, setAccessState] = useState("N/A");
+    const [currentUser, setCurrentUser] = useState("N/A");
 
     useEffect(() => {
         const controller = new AbortController();
@@ -48,6 +50,12 @@ function MainPage() {
                         if (metadata.Image) {
                             setFrame(`data:image/jpeg;base64,${metadata.Image}`);
                         }
+                        if (metadata.User) {
+                            setCurrentUser(metadata.User);
+                        }
+                        if (metadata.Access) {
+                            setAccessState(metadata.Access === "True" ? "Open" : "Closed");
+                        }
                     }
                 }
             } catch (error) {
@@ -77,6 +85,16 @@ function MainPage() {
                 ) : (
                     <div className="placeholder">No frame</div>
                 )}
+            </div>
+            <div className="status-grid">
+                <div className="status-card">
+                    <span>Current user</span>
+                    <strong>{currentUser}</strong>
+                </div>
+                <div className="status-card">
+                    <span>Access state</span>
+                    <strong>{accessState}</strong>
+                </div>
             </div>
             {streamError ? <p className="error-text">{streamError}</p> : null}
         </section>
