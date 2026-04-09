@@ -1,8 +1,30 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-const demoInstitutes = [];
+import { api } from "../api/client";
 
 function Institutes() {
+    const [institutes, setInstitutes] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const loadInstitutes = async () => {
+            setLoading(true);
+            setError("");
+            try {
+                const data = await api.getInstitutes();
+                setInstitutes(data);
+            } catch (requestError) {
+                setError(requestError.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadInstitutes();
+    }, []);
+
     return (
         <section className="panel">
             <div className="panel-title">
@@ -10,8 +32,11 @@ function Institutes() {
                 <h1>Institutes</h1>
             </div>
 
+            {error ? <p className="error-text">{error}</p> : null}
+            {loading ? <p className="muted-text">Loading...</p> : null}
+
             <div className="list-grid">
-                {demoInstitutes.map((institute) => (
+                {institutes.map((institute) => (
                     <Link
                         key={institute.id}
                         className="list-item"
