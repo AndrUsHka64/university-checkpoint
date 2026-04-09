@@ -1,0 +1,12 @@
+﻿__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+pythonBackend/instance/
+reactFronted/node_modules/
+reactFronted/dist/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
