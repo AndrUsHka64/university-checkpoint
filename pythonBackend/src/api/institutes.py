@@ -24,3 +24,9 @@ def create_institute():
         return jsonify({"error": "Institute with this name already exists"}), 409
 
     return jsonify(institute.to_dict()), 201
+
+
+@institutes_bp.get("/institutes")
+def get_institutes():
+    institutes = Institute.query.order_by(Institute.name.asc()).all()
+    return jsonify([institute.to_dict() for institute in institutes])
