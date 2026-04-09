@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+
+import { api } from "../api/client";
 
 const initialForm = {
     card_id: "",
@@ -11,12 +13,35 @@ const initialForm = {
 };
 
 function AddStudent() {
+    const navigate = useNavigate();
     const { instituteId, groupId } = useParams();
     const [form, setForm] = useState(initialForm);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
         setForm((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setError("");
+        setSuccess("");
+        setIsSubmitting(true);
+
+        try {
+            await api.createStudent(groupId, {
+                student: form,
+                frames: capturedFrames,
+            });
+            setSuccess("Student was created.");
+            setTimeout(() => {
+                navigate(`/admin/institutes/${instituteId}/groups/${groupId}/students`);
+            }, 600);
+        } catch (requestError) {
+            setError(requestError.message);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const captureFrames = async () => {
@@ -55,7 +80,7 @@ function AddStudent() {
                 <h1>Add student</h1>
             </div>
 
-            <form className="stack-form">
+            <form className="stack-form" onSubmit={handleSubmit}>
                 <div className="toolbar">
                     <Link
                         className="button ghost"
@@ -134,10 +159,14 @@ function AddStudent() {
                     >
                         {isCapturing ? "Capturing..." : "Capture frames"}
                     </button>
+                    <button type="submit" className="button primary" disabled={isSubmitting}>
+                        {isSubmitting ? "Saving..." : "Save student"}
+                    </button>
                 </div>
 
                 <p className="muted-text">Captured: {capturedFrames.length}</p>
                 {error ? <p className="error-text">{error}</p> : null}
+                {success ? <p className="success-text">{success}</p> : null}
             </form>
         </section>
     );
@@ -182,3 +211,5 @@ export default AddStudent;
         }
         setIsCameraActive(false);
     };
+    const [success, setSuccess] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
