@@ -24,4 +24,5 @@ async function request(path, options = {}) {
 
 export const api = {
     getInstitutes: () => request("/institutes"),
+    getGroups: (instituteId) => request(`/institutes/${instituteId}/groups`),
 };
