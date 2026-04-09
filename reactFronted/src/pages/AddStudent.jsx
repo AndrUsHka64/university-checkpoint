@@ -19,6 +19,35 @@ function AddStudent() {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
+    const captureFrames = async () => {
+        if (!videoRef.current || !isCameraActive) {
+            setError("Start camera first.");
+            return;
+        }
+
+        setIsCapturing(true);
+        setError("");
+        const frames = [];
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        const interval = setInterval(() => {
+            const width = videoRef.current.videoWidth || 640;
+            const height = videoRef.current.videoHeight || 480;
+            canvas.width = width;
+            canvas.height = height;
+            context.drawImage(videoRef.current, 0, 0, width, height);
+            const frame = canvas.toDataURL("image/jpeg", 0.8);
+            frames.push(frame);
+            setPreviewFrame(frame);
+        }, 200);
+
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+        clearInterval(interval);
+        setCapturedFrames(frames);
+        setIsCapturing(false);
+    };
+
     return (
         <section className="panel">
             <div className="panel-title">
@@ -80,6 +109,11 @@ function AddStudent() {
 
                 <div className="camera-block">
                     <video ref={videoRef} autoPlay muted playsInline />
+                    {previewFrame ? (
+                        <img src={previewFrame} alt="Captured preview" />
+                    ) : (
+                        <div className="placeholder">No captured frame yet</div>
+                    )}
                 </div>
 
                 <div className="toolbar">
@@ -92,8 +126,17 @@ function AddStudent() {
                             Stop camera
                         </button>
                     )}
+                    <button
+                        type="button"
+                        className="button primary"
+                        onClick={captureFrames}
+                        disabled={!isCameraActive || isCapturing}
+                    >
+                        {isCapturing ? "Capturing..." : "Capture frames"}
+                    </button>
                 </div>
 
+                <p className="muted-text">Captured: {capturedFrames.length}</p>
                 {error ? <p className="error-text">{error}</p> : null}
             </form>
         </section>
@@ -102,6 +145,9 @@ function AddStudent() {
 
 export default AddStudent;
     const [isCameraActive, setIsCameraActive] = useState(false);
+    const [isCapturing, setIsCapturing] = useState(false);
+    const [capturedFrames, setCapturedFrames] = useState([]);
+    const [previewFrame, setPreviewFrame] = useState("");
     const [error, setError] = useState("");
 
     const videoRef = useRef(null);
