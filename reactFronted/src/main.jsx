@@ -9,6 +9,7 @@ import AddStudent from "./pages/AddStudent";
 import Groups from "./pages/Groups";
 import Hello from "./pages/Hello";
 import Institutes from "./pages/Institutes";
+import MainPage from "./pages/MainPage";
 import Students from "./pages/Students";
 
 const router = createBrowserRouter([
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
         element: <App />,
         children: [
             { index: true, element: <Hello /> },
+            { path: "start", element: <MainPage /> },
             { path: "admin", element: <Admin /> },
             { path: "admin/institutes", element: <Institutes /> },
             {
