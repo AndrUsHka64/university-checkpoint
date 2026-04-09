@@ -84,3 +84,25 @@ class FaceRecognitionService:
         db.session.commit()
         self.reload_known_faces()
         return student
+
+    def create_student(self, student_data, frames=None):
+        student = Student(
+            card_id=student_data["card_id"],
+            last_name=student_data["last_name"],
+            first_name=student_data["first_name"],
+            patronymic=student_data.get("patronymic"),
+            phone=student_data.get("phone"),
+            learning_form=student_data.get("learning_form"),
+            group_id=student_data["group_id"],
+            institute_id=student_data["institute_id"],
+        )
+
+        db.session.add(student)
+        db.session.flush()
+
+        if frames:
+            student.face_embedding = self.encode_frames(frames)
+
+        db.session.commit()
+        self.reload_known_faces()
+        return student
