@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api/client";
 
 function MainPage() {
+    const [frame, setFrame] = useState("");
     const [streamError, setStreamError] = useState("");
 
     useEffect(() => {
@@ -20,10 +21,33 @@ function MainPage() {
                 }
 
                 const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let buffer = "";
                 while (mounted) {
-                    const { done } = await reader.read();
+                    const { done, value } = await reader.read();
                     if (done) {
                         break;
+                    }
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const chunks = buffer.split("\n");
+                    buffer = chunks.pop() ?? "";
+
+                    for (const chunk of chunks) {
+                        if (!chunk.trim()) {
+                            continue;
+                        }
+
+                        let metadata;
+                        try {
+                            metadata = JSON.parse(chunk);
+                        } catch (_error) {
+                            continue;
+                        }
+
+                        if (metadata.Image) {
+                            setFrame(`data:image/jpeg;base64,${metadata.Image}`);
+                        }
                     }
                 }
             } catch (error) {
@@ -48,7 +72,11 @@ function MainPage() {
                 <h1>Camera stream</h1>
             </div>
             <div className="stream-box">
-                <div className="placeholder">No frame</div>
+                {frame ? (
+                    <img src={frame} alt="Webcam stream" />
+                ) : (
+                    <div className="placeholder">No frame</div>
+                )}
             </div>
             {streamError ? <p className="error-text">{streamError}</p> : null}
         </section>
