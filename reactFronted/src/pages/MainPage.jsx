@@ -1,14 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import { api } from "../api/client";
+import { NotificationContext } from "../App";
+import Alert from "../components/Alert";
 
 function MainPage() {
+    const { notificationList } = useContext(NotificationContext);
+
     const [frame, setFrame] = useState("");
     const [streamError, setStreamError] = useState("");
     const [accessState, setAccessState] = useState("N/A");
     const [currentUser, setCurrentUser] = useState("N/A");
     const [activeFaces, setActiveFaces] = useState([]);
     const [entriesCount, setEntriesCount] = useState(0);
+    const [alertText, setAlertText] = useState("");
 
     const countedUsersRef = useRef(new Set());
 
@@ -120,6 +125,18 @@ function MainPage() {
         return () => clearInterval(cleanup);
     }, []);
 
+    useEffect(() => {
+        let text = "";
+        for (const notification of notificationList) {
+            const matched = activeFaces.some((face) => face.user === notification.card_id);
+            if (matched) {
+                text = notification.text;
+                break;
+            }
+        }
+        setAlertText(text);
+    }, [activeFaces, notificationList]);
+
     return (
         <section className="panel">
             <div className="panel-title">
@@ -132,6 +149,7 @@ function MainPage() {
                 ) : (
                     <div className="placeholder">No frame</div>
                 )}
+                {alertText ? <Alert text={alertText} /> : null}
             </div>
             <div className="status-grid">
                 <div className="status-card">
