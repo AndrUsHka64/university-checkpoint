@@ -1,9 +1,30 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
-const demoStudents = [];
+import { api } from "../api/client";
 
 function Students() {
     const { instituteId, groupId } = useParams();
+    const [students, setStudents] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const loadStudents = async () => {
+            setLoading(true);
+            setError("");
+            try {
+                const data = await api.getStudents(groupId);
+                setStudents(data);
+            } catch (requestError) {
+                setError(requestError.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadStudents();
+    }, [groupId]);
 
     return (
         <section className="panel">
@@ -18,6 +39,9 @@ function Students() {
                 </Link>
             </div>
 
+            {error ? <p className="error-text">{error}</p> : null}
+            {loading ? <p className="muted-text">Loading...</p> : null}
+
             <div className="table-wrap">
                 <table>
                     <thead>
@@ -31,7 +55,7 @@ function Students() {
                         </tr>
                     </thead>
                     <tbody>
-                        {demoStudents.map((student, index) => (
+                        {students.map((student, index) => (
                             <tr key={student.id}>
                                 <td>{index + 1}</td>
                                 <td>{student.card_id}</td>
