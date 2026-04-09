@@ -26,4 +26,9 @@ export const api = {
     getInstitutes: () => request("/institutes"),
     getGroups: (instituteId) => request(`/institutes/${instituteId}/groups`),
     getStudents: (groupId) => request(`/groups/${groupId}/students`),
+    createStudent: (groupId, payload) =>
+        request(`/groups/${groupId}/students`, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        }),
 };
