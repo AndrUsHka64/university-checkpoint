@@ -1,9 +1,30 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
-const demoGroups = [];
+import { api } from "../api/client";
 
 function Groups() {
     const { instituteId } = useParams();
+    const [groups, setGroups] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const loadGroups = async () => {
+            setLoading(true);
+            setError("");
+            try {
+                const data = await api.getGroups(instituteId);
+                setGroups(data);
+            } catch (requestError) {
+                setError(requestError.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadGroups();
+    }, [instituteId]);
 
     return (
         <section className="panel">
@@ -18,8 +39,11 @@ function Groups() {
                 </Link>
             </div>
 
+            {error ? <p className="error-text">{error}</p> : null}
+            {loading ? <p className="muted-text">Loading...</p> : null}
+
             <div className="list-grid">
-                {demoGroups.map((group) => (
+                {groups.map((group) => (
                     <Link
                         key={group.id}
                         className="list-item"
