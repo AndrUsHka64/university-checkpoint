@@ -37,6 +37,12 @@ function Students() {
                 <Link className="button ghost" to={`/admin/institutes/${instituteId}/groups`}>
                     Back to groups
                 </Link>
+                <Link
+                    className="button primary"
+                    to={`/admin/institutes/${instituteId}/groups/${groupId}/students/new`}
+                >
+                    Add student
+                </Link>
             </div>
 
             {error ? <p className="error-text">{error}</p> : null}
